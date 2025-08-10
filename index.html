@@ -1,75 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Salary Calculator</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="manifest" href="manifest.json" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>💰 Salary Calculator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="theme-toggle">
-        <button id="toggleTheme">🌙 Dark Mode</button>
+  <div class="app">
+    <header class="topbar">
+      <h1>💰 Salary Calculator</h1>
+      <div class="top-controls">
+        <button id="toggleTheme" class="btn light" aria-label="Toggle theme">🌙</button>
+      </div>
+    </header>
+
+    <div class="card">
+      <form id="salaryForm" class="form">
+        <div class="two-col">
+          <div class="field">
+            <label for="baseSalary">Base Salary ($)</label>
+            <input type="number" id="baseSalary" required min="0" />
+          </div>
+          <div class="field">
+            <label for="bonus">Bonus ($)</label>
+            <input type="number" id="bonus" value="0" min="0" />
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="field">
+            <label for="taxRate">Tax Rate (%)</label>
+            <input type="number" id="taxRate" value="20" min="0" max="100" />
+          </div>
+          <div class="field">
+            <label for="insurance">Insurance ($)</label>
+            <input type="number" id="insurance" value="0" min="0" />
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn primary">Calculate</button>
+          <button type="reset" class="btn light">Clear</button>
+        </div>
+      </form>
+
+      <div class="result" id="resultSection" style="display: none;">
+        <h2>Net Salary</h2>
+        <div class="breakdown">
+          <div class="row"><span>Gross:</span><span id="grossAmount"></span></div>
+          <div class="row"><span>Tax:</span><span id="taxAmount"></span></div>
+          <div class="row"><span>Insurance:</span><span id="insuranceAmount"></span></div>
+          <div class="row total"><span>Net:</span><strong id="netAmount"></strong></div>
+        </div>
+
+        <div class="result-actions">
+          <button id="exportPDF" class="btn tiny light">📄 Export PDF</button>
+          <button id="exportCSV" class="btn tiny light">📑 Export CSV</button>
+        </div>
+      </div>
+
+      <div class="history">
+        <h3>History</h3>
+        <ul class="history-list" id="historyList"></ul>
+      </div>
     </div>
+  </div>
 
-    <div class="calculator-container">
-        <h1>💰 Salary Calculator</h1>
-
-        <div class="input-group">
-            <label for="currentSalary">Current Salary:</label>
-            <input type="number" id="currentSalary" placeholder="e.g., 50000">
-        </div>
-
-        <div class="input-group">
-            <label for="fixedDeductions">Fixed Deductions:</label>
-            <input type="number" id="fixedDeductions" placeholder="e.g., 2000">
-        </div>
-
-        <div class="input-group">
-            <label for="canteenDeductions">Canteen Deductions:</label>
-            <input type="number" id="canteenDeductions" placeholder="e.g., 500">
-        </div>
-
-        <div class="input-group">
-            <label for="overtimePayPerHour">Overtime Pay per Hour:</label>
-            <input type="number" id="overtimePayPerHour" placeholder="e.g., 50">
-        </div>
-
-        <div class="input-group">
-            <label for="overtimeHours">Overtime Hours Worked:</label>
-            <input type="number" id="overtimeHours" placeholder="e.g., 10">
-        </div>
-
-        <button id="calculateBtn">Calculate Salary</button>
-
-        <div class="result-container">
-            <h2>Net Salary: <span id="netSalary">0</span></h2>
-            <table id="salaryBreakdown">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-
-        <div class="export-buttons">
-            <button id="exportPDF">📄 Export PDF</button>
-            <button id="exportExcel">📊 Export Excel</button>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="script.js"></script>
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("service-worker.js")
-                .then(() => console.log("Service Worker Registered"));
-        }
-    </script>
+  <script src="script.js"></script>
 </body>
 </html>

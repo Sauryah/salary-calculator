@@ -1,111 +1,129 @@
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #74ABE2, #5563DE);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 20px;
-    min-height: 100vh;
-    margin: 0;
-    transition: background 0.3s ease;
+:root{
+  --bg: linear-gradient(180deg,#eef6ff,#f7fbff);
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #0b78e3;
+  --good: #16a34a;
+  --radius: 12px;
+
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 18px;
+  --max-width: 480px;
 }
 
-.dark-mode {
-    background: linear-gradient(135deg, #1f1f1f, #121212);
-    color: #eee;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+  background:var(--bg);
+  color:#0f172a;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
 }
 
-.calculator-container {
-    background-color: #fff;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 400px;
-    transition: background-color 0.3s ease;
+.app{
+  width:100%;
+  max-width:calc(var(--max-width) + 40px);
+  margin:0 auto;
 }
 
-.dark-mode .calculator-container {
-    background-color: #222;
-    color: #fff;
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+  padding:0 6px;
+}
+.topbar h1{font-size:clamp(1.05rem, 4vw, 1.25rem); margin:0}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:var(--spacing-md);
+  box-shadow:0 10px 30px rgba(2,6,23,0.08);
+  width:100%;
+  max-width:var(--max-width);
+  margin:0 auto;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.card:active{transform:translateY(1px)}
+
+.form{display:block;gap:12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:600;margin-bottom:6px;font-size:0.95rem}
+.field input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #e6eef7;
+  font-size:1rem;
+  background:transparent;
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
+.two-col{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+
+.actions{display:flex;gap:10px;margin-top:6px}
+.btn{border:0;padding:12px 14px;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.95rem}
+.btn.primary{background:linear-gradient(90deg,var(--accent),#0557b8);color:#fff}
+.btn.light{background:#f3f4f6}
+
+.result{margin-top:16px}
+.result h2{margin:0 0 8px 0;font-size:1rem}
+.breakdown{
+  margin-top:8px;border-radius:10px;padding:10px;background:#f8fbff;border:1px solid #eef6ff;
+  font-size:0.97rem;
+}
+.row{display:flex;justify-content:space-between;padding:6px 4px;color:#0f172a}
+.row.total{font-size:1.05rem;font-weight:800;border-top:1px dashed rgba(0,0,0,0.05);padding-top:10px;margin-top:8px}
+.row strong{color:var(--good)}
+
+.result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.btn.tiny{padding:8px 10px;font-size:0.86rem;border-radius:8px}
+
+.export-buttons{display:flex;gap:8px;margin-top:12px}
+.export-buttons button{flex:1;min-width:0}
+
+.history{margin-top:12px}
+.history-list{list-style:none;padding:0;margin:0}
+.history-list li{padding:8px;border-radius:8px;background:#fff7ed;border:1px solid #ffedd5;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;font-size:0.95rem}
+.history-list button{background:transparent;border:0;color:var(--accent);cursor:pointer}
+
+input, button { touch-action:manipulation; -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
+
+@media (max-width:720px){
+  .two-col{grid-template-columns:1fr}
+  .card{padding:14px}
+  .topbar{gap:10px}
+  .actions{flex-direction:column;}
+  .actions .btn{width:100%}
+  .export-buttons{flex-direction:column}
+  .export-buttons button{width:100%}
+  .history-list li{flex-direction:column;align-items:flex-start;gap:6px}
+  .row{font-size:0.95rem}
 }
 
-.input-group {
-    margin-bottom: 15px;
+@media (max-width:380px){
+  :root{--spacing-md:14px}
+  .field input{padding:10px;font-size:0.95rem}
+  .btn{padding:10px 12px;font-size:0.92rem}
+  .topbar h1{font-size:1rem}
 }
 
-label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
+body.dark{
+  --bg: linear-gradient(180deg,#021026,#07121b);
+  --card: rgba(11,17,29,0.95);
+  color:#e6eef7;
 }
+body.dark .card{box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+body.dark input{background:transparent;color:#e6eef7;border-color:#143045}
+body.dark .breakdown{background:rgba(255,255,255,0.02);border-color:rgba(255,255,255,0.04)}
+body.dark #salaryBreakdown th{background:#0f1720;color:#e6eef7}
 
-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.result-container {
-    margin-top: 20px;
-}
-
-#salaryBreakdown {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-#salaryBreakdown th, #salaryBreakdown td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: right;
-}
-
-#salaryBreakdown th {
-    background-color: #f0f0f0;
-}
-
-.dark-mode #salaryBreakdown th {
-    background-color: #333;
-}
-
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.theme-toggle {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-}
-
-@media (max-width: 600px) {
-    .calculator-container {
-        padding: 15px;
-    }
-}
+body{padding-left:env(safe-area-inset-left,20px); padding-right:env(safe-area-inset-right,20px)}
