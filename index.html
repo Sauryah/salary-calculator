@@ -1,48 +1,102 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Salary Calculator</title>
-    <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drawing Dies Calculator</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#007BFF" />
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Libraries (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div class="calculator-container">
-        <h1>Salary Calculator</h1>
+  <div class="app">
+    <header class="app-header">
+      <h1>Drawing Dies Calculator</h1>
+      <div class="controls">
+        <label class="theme">
+          <input id="themeSwitch" type="checkbox">
+          <span>🌙</span>
+        </label>
+      </div>
+    </header>
 
-        <div class="input-group">
-            <label for="currentSalary">Current Salary:</label>
-            <input type="number" id="currentSalary" placeholder="e.g., 50000" />
+    <main class="card">
+      <section class="form-grid">
+        <div class="field">
+          <label id="startingDieLabel" for="startingDie">Starting Die (D):</label>
+          <input id="startingDie" type="number" step="0.001" placeholder="e.g., 0.649">
         </div>
 
-        <div class="input-group">
-            <label for="fixedDeductions">Fixed Deductions:</label>
-            <input type="number" id="fixedDeductions" placeholder="e.g., 2000" />
+        <div class="field">
+          <label for="elongationPercentage">Elongation %</label>
+          <input id="elongationPercentage" type="number" step="0.01" placeholder="e.g., 26.17">
         </div>
 
-        <div class="input-group">
-            <label for="canteenDeductions">Canteen Deductions:</label>
-            <input type="number" id="canteenDeductions" placeholder="e.g., 500" />
+        <div class="field">
+          <label>Direction</label>
+          <div class="radio-row">
+            <label><input name="direction" type="radio" value="previous" checked> Previous</label>
+            <label><input name="direction" type="radio" value="next"> Next</label>
+          </div>
         </div>
 
-        <div class="input-group">
-            <label for="overtimePayPerHour">Overtime Pay per Hour:</label>
-            <input type="number" id="overtimePayPerHour" placeholder="e.g., 50" />
+        <div class="field">
+          <label for="numberOfDies">Number of Dies</label>
+          <input id="numberOfDies" type="number" placeholder="e.g., 5">
         </div>
 
-        <div class="input-group">
-            <label for="overtimeHours">Overtime Hours Worked:</label>
-            <input type="number" id="overtimeHours" placeholder="e.g., 10" />
+        <div class="field actions" style="grid-column: 1 / -1;">
+          <button id="calculateBtn" class="btn primary">Calculate</button>
+          <button id="clearBtn" class="btn light">Clear</button>
+        </div>
+      </section>
+
+      <section class="result" id="resultSection" aria-live="polite">
+        <div class="result-header">
+          <h2>Die Schedule</h2>
+          <div class="result-actions">
+            <button id="exportPdf" class="btn tiny">Export PDF</button>
+            <button id="exportXlsx" class="btn tiny">Export XLSX</button>
+            <button id="saveHistory" class="btn tiny">Save</button>
+            <button id="copyAll" class="btn tiny">Copy</button>
+          </div>
         </div>
 
-        <button onclick="calculateSalary()">Calculate Salary</button>
+        <p id="summaryMessage" class="muted"></p>
 
-        <div class="result-container">
-            <h2>Net Salary: <span id="netSalary">₹0.00</span></h2>
-            <div id="breakdown" class="breakdown hidden"></div>
+        <ul id="dieList" class="die-list" role="list"></ul>
+
+        <div class="chart-wrap">
+          <canvas id="diesChart" height="120"></canvas>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div class="history">
+          <h3>Saved Sessions</h3>
+          <ul id="historyList"></ul>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <small>Offline-ready • Works on GitHub Pages • No backend required</small>
+    </footer>
+  </div>
+
+  <script src="script.js" type="module"></script>
+
+  <!-- Register service worker gracefully -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+        console.warn('Service Worker registration failed:', error);
+      });
+    }
+  </script>
 </body>
 </html>
