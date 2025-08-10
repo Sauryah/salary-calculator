@@ -1,175 +1,171 @@
-// script.js
-import { Chart, registerables } from 'https://cdn.jsdelivr.net/npm/chart.js/dist/chart.esm.js';
-Chart.register(...registerables);
-
 // Elements
-const startingDie = document.getElementById('startingDie');
-const elongationPercentage = document.getElementById('elongationPercentage');
-const numberOfDies = document.getElementById('numberOfDies');
+const currentSalary = document.getElementById('currentSalary');
+const fixedDeductions = document.getElementById('fixedDeductions');
+const canteenDeductions = document.getElementById('canteenDeductions');
+const overtimePayPerHour = document.getElementById('overtimePayPerHour');
+const overtimeHours = document.getElementById('overtimeHours');
+const hourlyPay = document.getElementById('hourlyPay');
+const hoursWorked = document.getElementById('hoursWorked');
+
 const calculateBtn = document.getElementById('calculateBtn');
 const clearBtn = document.getElementById('clearBtn');
-const dieList = document.getElementById('dieList');
-const summaryMessage = document.getElementById('summaryMessage');
-const resultSection = document.getElementById('resultSection');
+const netSalaryDisplay = document.getElementById('netSalary');
 const exportPdf = document.getElementById('exportPdf');
-const exportXlsx = document.getElementById('exportXlsx');
-const saveHistory = document.getElementById('saveHistory');
+const copyBtn = document.getElementById('copyBtn');
+const saveBtn = document.getElementById('saveBtn');
 const historyList = document.getElementById('historyList');
-const copyAll = document.getElementById('copyAll');
-const themeSwitch = document.getElementById('themeSwitch');
 
-// Chart
-const ctx = document.getElementById('diesChart').getContext('2d');
-let diesChart = new Chart(ctx, {
-  type: 'line',
-  data: { labels: [], datasets: [{ label: 'Die size', data: [], tension: 0.3, fill: false }] },
-  options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { display: false } } }
-});
+let historyData = [];
 
-// Safe localStorage wrapper
-const storageAvailable = (() => {
-  try {
-    const testKey = '__storage_test__';
-    localStorage.setItem(testKey, testKey);
-    localStorage.removeItem(testKey);
-    return true;
-  } catch (e) {
-    return false;
-  }
-})();
+// Calculate function
+function calculateSalary() {
+  const salary = parseFloat(currentSalary.value) || 0;
+  const fixedDeduct = parseFloat(fixedDeductions.value) || 0;
+  const canteenDeduct = parseFloat(canteenDeductions.value) || 0;
+  const otPay = parseFloat(overtimePayPerHour.value) || 0;
+  const otHours = parseFloat(overtimeHours.value) || 0;
+  const hrPay = parseFloat(hourlyPay.value) || 0;
+  const hrsWorked = parseFloat(hoursWorked.value) || 0;
 
-const safeStorage = {
-  getItem: (key) => {
-    if (!storageAvailable) return null;
-    try { return localStorage.getItem(key); } catch { return null; }
-  },
-  setItem: (key, value) => {
-    if (!storageAvailable) return;
-    try { localStorage.setItem(key, value); } catch {}
-  }
-};
+  const overtimeEarnings = otPay * otHours;
+  const hourlyEarnings = hrPay * hrsWorked;
+  const totalDeductions = fixedDeduct + canteenDeduct;
 
-// Theme
-if (safeStorage.getItem('theme') === 'dark') {
-  if (window.innerWidth > 720) {
-    document.body.classList.add('dark');
-    themeSwitch.checked = true;
-  }
+  const netSalary = salary + overtimeEarnings + hourlyEarnings - totalDeductions;
+
+  netSalaryDisplay.textContent = `₹${netSalary.toFixed(2)}`;
+  return netSalary;
 }
 
-themeSwitch.addEventListener('change', () => {
-  // Only allow dark mode toggle on desktop width
-  if (window.innerWidth <= 720) {
-    themeSwitch.checked = false;
+// Clear inputs
+function clearFields() {
+  [
+    currentSalary,
+    fixedDeductions,
+    canteenDeductions,
+    overtimePayPerHour,
+    overtimeHours,
+    hourlyPay,
+    hoursWorked,
+  ].forEach(input => input.value = '');
+  netSalaryDisplay.textContent = '₹0.00';
+}
+
+// Export PDF
+async function exportAsPDF() {
+  exportPdf.disabled = true;
+  try {
+    const el = document.querySelector('.calculator-container');
+    const canvas = await html2canvas(el, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('salary-calculation.pdf');
+  } catch (e) {
+    alert('Error exporting PDF: ' + e.message);
+  }
+  exportPdf.disabled = false;
+}
+
+// Copy to clipboard
+function copyToClipboard() {
+  const text = netSalaryDisplay.textContent;
+  if (text === '₹0.00') {
+    alert('Please calculate salary first!');
     return;
   }
-  document.body.classList.toggle('dark');
-  safeStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-});
+  navigator.clipboard.writeText(text)
+    .then(() => alert('Net Salary copied to clipboard!'))
+    .catch(() => alert('Failed to copy!'));
+}
 
-// Listen window resize to disable dark mode on small screens
-window.addEventListener('resize', () => {
-  if (window.innerWidth <= 720 && document.body.classList.contains('dark')) {
-    document.body.classList.remove('dark');
-    themeSwitch.checked = false;
-    safeStorage.setItem('theme', 'light');
+// Save session
+function saveSession() {
+  const netSalary = calculateSalary();
+
+  if (netSalary === 0) {
+    alert('Calculate salary before saving a session.');
+    return;
   }
-});
 
-// Load history
-const loadHistory = () => {
-  const arr = JSON.parse(safeStorage.getItem('dieHistory') || '[]');
+  const session = {
+    date: new Date().toLocaleString(),
+    currentSalary: currentSalary.value || '0',
+    fixedDeductions: fixedDeductions.value || '0',
+    canteenDeductions: canteenDeductions.value || '0',
+    overtimePayPerHour: overtimePayPerHour.value || '0',
+    overtimeHours: overtimeHours.value || '0',
+    hourlyPay: hourlyPay.value || '0',
+    hoursWorked: hoursWorked.value || '0',
+    netSalary: netSalary.toFixed(2),
+  };
+
+  historyData.push(session);
+  localStorage.setItem('salaryCalcHistory', JSON.stringify(historyData));
+  renderHistory();
+  alert('Session saved!');
+}
+
+// Render history list
+function renderHistory() {
   historyList.innerHTML = '';
-  arr.slice().reverse().forEach((s, i) => {
+
+  if (historyData.length === 0) {
+    historyList.innerHTML = '<li>No saved sessions</li>';
+    return;
+  }
+
+  historyData.slice().reverse().forEach((session, index) => {
     const li = document.createElement('li');
-    li.textContent = `${s.date} — ${s.summary}`;
-    li.addEventListener('click', () => {
-      restoreSession(s);
+    li.tabIndex = 0;
+    li.textContent = `${session.date} — ₹${session.netSalary}`;
+    li.title = 'Click to load this session';
+    li.addEventListener('click', () => loadSession(session));
+    li.addEventListener('keypress', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        loadSession(session);
+      }
     });
     historyList.appendChild(li);
   });
-};
-
-// Restore session helper
-const restoreSession = (s) => {
-  startingDie.value = s.start;
-  elongationPercentage.value = s.elon;
-  numberOfDies.value = s.count;
-  document.querySelectorAll('input[name="direction"]').forEach(r => r.checked = (r.value === s.dir));
-  calculate();
-};
-
-// Calculation
-const getDirection = () => document.querySelector('input[name="direction"]:checked').value;
-
-function calculate() {
-  dieList.innerHTML = '';
-  summaryMessage.textContent = '';
-
-  const start = parseFloat(startingDie.value);
-  const elong = parseFloat(elongationPercentage.value);
-  const count = parseInt(numberOfDies.value, 10);
-  const dir = getDirection();
-
-  if (![start, elong, count].every(v => !isNaN(v) && v > 0)) {
-    summaryMessage.textContent = '⚠ Please enter valid positive numbers in all fields.';
-    resultSection.scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
-
-  const factor = Math.sqrt(1 + (elong / 100));
-  let current = start;
-  const arr = [current];
-  for (let i = 0; i < count; i++) {
-    current = (dir === 'previous') ? current * factor : current / factor;
-    arr.push(current);
-  }
-
-  const display = (dir === 'previous') ? arr.slice().reverse() : arr;
-
-  summaryMessage.textContent = `${count} ${dir === 'previous' ? 'previous' : 'next'} dies from ${start.toFixed(3)}`;
-
-  display.forEach((d, idx) => {
-    const li = document.createElement('li');
-    const label = (idx === 0) ? (dir === 'previous' ? 'Final Die' : 'Starting Die') : (dir === 'previous' ? `Prev ${idx}` : `Next ${idx}`);
-    li.innerHTML = `<span>${label}</span><strong>${d.toFixed(3)}</strong>`;
-    dieList.appendChild(li);
-  });
-
-  // update chart
-  diesChart.data.labels = display.map((_, i) => i + 1);
-  diesChart.data.datasets[0].data = display.map(d => Number(d.toFixed(6)));
-  diesChart.update();
-
-  resultSection.scrollIntoView({ behavior: 'smooth' });
 }
 
-calculateBtn.addEventListener('click', calculate);
-clearBtn.addEventListener('click', () => {
-  startingDie.value = '';
-  elongationPercentage.value = '';
-  numberOfDies.value = '';
-  dieList.innerHTML = '';
-  summaryMessage.textContent = '';
-  diesChart.data.labels = [];
-  diesChart.data.datasets[0].data = [];
-  diesChart.update();
-});
+// Load session back into inputs
+function loadSession(session) {
+  currentSalary.value = session.currentSalary;
+  fixedDeductions.value = session.fixedDeductions;
+  canteenDeductions.value = session.canteenDeductions;
+  overtimePayPerHour.value = session.overtimePayPerHour;
+  overtimeHours.value = session.overtimeHours;
+  hourlyPay.value = session.hourlyPay;
+  hoursWorked.value = session.hoursWorked;
+  netSalaryDisplay.textContent = `₹${parseFloat(session.netSalary).toFixed(2)}`;
+}
 
-// Exports
-exportPdf.addEventListener('click', async () => {
-  exportPdf.disabled = true;
-  try {
-    const el = document.querySelector('.card');
-    const canvas = await html2canvas(el, { scale: 2 });
-    const img = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [canvas.width, canvas.height] });
-    pdf.addImage(img, 'PNG', 0, 0, canvas.width, canvas.height);
-    pdf.save('die-schedule.pdf');
-  } catch (err) {
-    alert('Failed to export PDF: ' + err.message);
-  } finally {
-    exportPdf.disabled = false;
+// Initialize from localStorage
+function init() {
+  const saved = localStorage.getItem('salaryCalcHistory');
+  if (saved) {
+    try {
+      historyData = JSON.parse(saved);
+    } catch {
+      historyData = [];
+    }
   }
-});
+  renderHistory();
+}
+
+calculateBtn.addEventListener('click', calculateSalary);
+clearBtn.addEventListener('click', clearFields);
+exportPdf.addEventListener('click', exportAsPDF);
+copyBtn.addEventListener('click', copyToClipboard);
+saveBtn.addEventListener('click', saveSession);
+
+window.addEventListener('load', init);
