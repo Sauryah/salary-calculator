@@ -1,45 +1,55 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background: linear-gradient(135deg, #74ABE2, #5563DE);
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    padding: 20px;
+    min-height: 100vh;
     margin: 0;
+    transition: background 0.3s ease;
+}
+
+.dark-mode {
+    background: linear-gradient(135deg, #1f1f1f, #121212);
+    color: #eee;
 }
 
 .calculator-container {
     background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 350px; /* Base width for desktop */
-    text-align: center;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .calculator-container {
+    background-color: #222;
+    color: #fff;
 }
 
 h1 {
-    color: #333;
+    text-align: center;
     margin-bottom: 20px;
 }
 
 .input-group {
     margin-bottom: 15px;
-    text-align: left;
 }
 
 label {
+    font-weight: bold;
     display: block;
     margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
 }
 
 input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #aaa;
     border-radius: 5px;
-    box-sizing: border-box;
 }
 
 button {
@@ -48,10 +58,10 @@ button {
     background-color: #007BFF;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
@@ -59,29 +69,43 @@ button:hover {
 }
 
 .result-container {
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    margin-top: 20px;
 }
 
-#netSalary {
-    font-size: 24px;
-    color: #28a745;
-    font-weight: bold;
+#salaryBreakdown {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
 }
 
-/* ------------------------------------------- */
-/* Media Query for Mobile Responsiveness */
-/* ------------------------------------------- */
+#salaryBreakdown th, #salaryBreakdown td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: right;
+}
+
+#salaryBreakdown th {
+    background-color: #f0f0f0;
+}
+
+.dark-mode #salaryBreakdown th {
+    background-color: #333;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
 
 @media (max-width: 600px) {
     .calculator-container {
-        width: 90%; /* Adjusts the width to be 90% of the viewport */
-        padding: 20px; /* Reduces padding on smaller screens */
-    }
-
-    body {
-        height: auto; /* Allows the body to expand if needed */
-        padding: 20px; /* Adds some space around the calculator on small screens */
+        padding: 15px;
     }
 }

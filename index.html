@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Salary Calculator</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="manifest" href="manifest.json" />
 </head>
 <body>
+    <div class="theme-toggle">
+        <button id="toggleTheme">🌙 Dark Mode</button>
+    </div>
+
     <div class="calculator-container">
-        <h1>Salary Calculator</h1>
+        <h1>💰 Salary Calculator</h1>
 
         <div class="input-group">
             <label for="currentSalary">Current Salary:</label>
@@ -35,13 +40,36 @@
             <input type="number" id="overtimeHours" placeholder="e.g., 10">
         </div>
 
-        <button onclick="calculateSalary()">Calculate Salary</button>
+        <button id="calculateBtn">Calculate Salary</button>
 
         <div class="result-container">
             <h2>Net Salary: <span id="netSalary">0</span></h2>
+            <table id="salaryBreakdown">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="export-buttons">
+            <button id="exportPDF">📄 Export PDF</button>
+            <button id="exportExcel">📊 Export Excel</button>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="script.js"></script>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("Service Worker Registered"));
+        }
+    </script>
 </body>
 </html>
