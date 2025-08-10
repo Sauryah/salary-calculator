@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>Salary Calculator</h1>
+
+        <div class="input-group">
+            <label for="currentSalary">Current Salary:</label>
+            <input type="number" id="currentSalary" placeholder="e.g., 50000">
+        </div>
+
+        <div class="input-group">
+            <label for="fixedDeductions">Fixed Deductions:</label>
+            <input type="number" id="fixedDeductions" placeholder="e.g., 2000">
+        </div>
+
+        <div class="input-group">
+            <label for="canteenDeductions">Canteen Deductions:</label>
+            <input type="number" id="canteenDeductions" placeholder="e.g., 500">
+        </div>
+
+        <div class="input-group">
+            <label for="overtimePayPerHour">Overtime Pay per Hour:</label>
+            <input type="number" id="overtimePayPerHour" placeholder="e.g., 50">
+        </div>
+
+        <div class="input-group">
+            <label for="overtimeHours">Overtime Hours Worked:</label>
+            <input type="number" id="overtimeHours" placeholder="e.g., 10">
+        </div>
+
+        <button onclick="calculateSalary()">Calculate Salary</button>
+
+        <div class="result-container">
+            <h2>Net Salary: <span id="netSalary">0</span></h2>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
